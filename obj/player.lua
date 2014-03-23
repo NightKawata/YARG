@@ -7,7 +7,7 @@ function player:initialize(x,y)
 	self.y = y
 	self.gx = x/8
 	self.gy = y/8
-	self.color = {255, 255, 255}
+	self.color = system.playercolor
 	self.player = true
 	self.can_move = true
 end
@@ -47,12 +47,20 @@ function player:keypressed(k)
 			self.y = self.y - 8
 		end
 	end
+
+	if k == " " then
+		self:checkfloor()
+	end
 end
 
 function player:check(x,y)
-	-- Sees if you can even move that direction
+	-- Sees if you can even move that direction, or you might interact with entities
 	if game.objects[y] and game.objects[y][x] then
 		--print(game.objects[y][x])
+		if game.objects[y][x].entity then
+			self:interact(game.objects[y][x])
+		end
+
 		if game.objects[y][x].solid then
 			return false
 		else
@@ -62,4 +70,40 @@ function player:check(x,y)
 		-- What are we even doing
 		return false
 	end
+end
+
+function player:checkfloor()
+	-- Checks the floor for anything interactable
+	if game.objects[self.gy] and game.objects[self.gy][self.gx] then
+		local g = game.objects[self.gy][self.gx]
+		if g.interactable then
+			self:interact(g)
+		end
+	end
+end
+
+function player:interact(obj)
+	local events = {
+		["default"] = function()
+			-- Nothing
+		end,
+
+		["moneybag"] = function()
+			system.gold = lume.clamp(system.gold + obj.money, 0, system.max_gold)
+			game:kill(obj)
+		end,
+
+		["item"] = function()
+			if obj.effect then 
+				obj:effect(self) 
+			end
+			game:kill(obj)
+		end,
+
+
+
+
+
+	}
+	events[obj.tag or "default"]()
 end

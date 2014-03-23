@@ -74,22 +74,38 @@ function system:switchState(state)
 end
 
 function system:setupVars()
+	-- base hp
 	self.max_hp = 50
 	self.hp = self.max_hp
+	-- base stats
 	self.atk = 5
 	self.def = 5
 	self.mat = 5
 	self.mdf = 5
 	self.agi = 5
+	-- stat bonuses
+	self.atk_bonus = 0
+	self.def_bonus = 0
+	self.mat_bonus = 0
+	self.mdf_bonus = 0
+	self.agi_bonus = 0
+	-- classy stuff
 	self.level = 1
 	self.class = "Adventurer"
 	self.name = "???"
+	-- xp (because yes)
 	self.xp = 0
 	self.max_xp = 100
+	-- gold stuff
 	self.gold = 0
 	self.max_gold = 500
+	self.gold_icon = "G"
+	-- system stuff
 	self.first_map = "test_cave"
 	self.map_path = "maps/"
+	self.playercolor = {255,255,255}
+
+	self.items = {} -- for items that have spawned in the past (only for global items)
 
 	local font = love.graphics.newFont("gfx/VGA8.ttf",8)
 	love.graphics.setFont(font)

@@ -1,10 +1,14 @@
 -- This is pretty much the gist of the game, where it's playable and all.
 require("obj.player")
 require("obj.tile")
+require("obj.moneybag")
+
+require("items.item")
 local __size = 8
 local generators = {
 	cave = require("generators/cave"),
 }
+local font = love.graphics.getFont()
 
 game = {}
 camera = {
@@ -36,6 +40,15 @@ function game:update(dt)
 		if game.player.update then game.player:update(dt) end
 	end
 
+	for y = camera.y, camera.view_y do
+		for x = camera.x, camera.view_x do
+			if self.objects[y] and self.objects[y][x] then
+				local o = self.objects[y][x]
+				if o and not o.player and o.update then o:update(dt) end
+			end
+		end
+	end
+
 	--print(camera.x, camera.y)
 end
 
@@ -54,6 +67,9 @@ function game:draw()
 	love.graphics.pop()
 	love.graphics.print(game.map_name,0,233)
 	love.graphics.print(system.name.." the "..system.class,0,1)
+
+	local gold_string = system.gold.."/"..system.max_gold..system.gold_icon
+	love.graphics.print(gold_string,320-(font:getWidth(gold_string))-2,233)
 end
 
 function game:keypressed(k)
@@ -76,6 +92,8 @@ function game:loadMap(mapfile)
 
 	-- Do we need to make the width/height random?
 	game.map_name = room.name -- We'll need that
+	game.gold_data = room.gold
+	game.item_data = room.items
 	if room.random_bounds then
 		game.map_width = love.math.random(room.min_width, room.max_width)-1
 		game.map_height = love.math.random(room.min_height, room.max_height)-1
@@ -91,6 +109,19 @@ function game:clearObjects()
 	self.objects = nil
 	self.objects = {}
 	self.player = nil
+end
+
+function game:kill(obj,dynamic)
+	if obj.kill then obj:kill() end
+
+	if dynamic then
+		-- kill from a list
+	else
+		-- kill from a grid
+		if game.objects[obj.y/8] and game.objects[obj.y/8][obj.x/8] then
+			game.objects[obj.y/8][obj.x/8] = tile:new(obj.x, obj.y, false, {color=game.nonsolcolor})
+		end
+	end
 end
 
 return game

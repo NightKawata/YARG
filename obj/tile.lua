@@ -5,7 +5,7 @@ function tile:initialize(x,y,solid,flags)
 	self.y = y
 	self.solid = solid
 	self.symbol = self.solid and "#" or "."
-	self.color = {255,255,255}
+	self.color = flags and flags.color or {255,255,255}
 end
 
 function tile:draw()

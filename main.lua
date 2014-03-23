@@ -7,8 +7,8 @@ local sys
 
 function love.load()
 	class = require("class")
-	game = require("game")
 	sys = require("system")
+	game = require("game")
 	lume = require("lume")
 	system = sys:new()
 

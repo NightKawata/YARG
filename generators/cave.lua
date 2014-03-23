@@ -40,6 +40,7 @@ function cell:dig()
 			--print("*** NO BLOCK!")
 			--self.active = false
 			--spawnCell(self.x,self.y)
+			self.dug = self.dug + 1
 			self.dir = dirs[love.math.random(1,#dirs)]
 			self:dig()
 		end
@@ -70,15 +71,27 @@ local function generate(state, room)
 	end
 	local cx, cy = math.floor(width/2), math.floor(height/2)
 
-	for i = 1, 3 do
+	for i = 1, 6 do
 		spawnCell(cx, cy)
 	end
 
+	local time = 0
 
 	while (mem > 0) do -- Now let's generate this map
-		--cells = cells - 1
+		time = time + 1
 		for i,v in pairs(cellbox) do
 			if v.active then v:dig() end
+		end
+
+		-- Just to keep this quick
+		if time >= 25000 and #cellbox >= 1 then
+			mem = mem - 1
+		elseif time >= 30000 and #cellbox <= 1 then
+			mem = mem - 1
+		end
+
+		if mem <= 0 then
+			print("# OF ITERATIONS: "..time)
 		end
 	end
 

@@ -12,6 +12,7 @@
 local __TITLE = "YARG"
 local __DEFAULT_WIDTH = 320
 local __DEFAULT_HEIGHT = 240
+local __DEFAULT_SCALE = 1
 local __DEFAULT_FLAGS = {
 	fullscreen = false,
 	fullscreentype = "desktop",
@@ -26,6 +27,7 @@ function system:initialize(title, w, h, flags)
 	self:setWidth(w)
 	self:setHeight(h)
 	self:setFlags(flags)
+	self:setScale(flags and flags.scale or __DEFAULT_SCALE)
 	self:setupWindow()
 	self:setupVars()
 
@@ -42,7 +44,7 @@ function system:setupWindow()
 	-- Makes sure the window is set up properly.
 	love.graphics.setDefaultFilter("nearest","nearest")
 	love.window.setTitle(self.title)
-	love.window.setMode(self.width, self.height, self.flags)
+	love.window.setMode(self.width*self.scale, self.height*self.scale, self.flags)
 end
 
 function system:setTitle(title)
@@ -65,6 +67,11 @@ function system:setFlags(flags)
 	self.flags = flags or __DEFAULT_FLAGS
 end
 
+function system:setScale(scale)
+	-- Sets the window scale.
+	self.scale = scale or __DEFAULT_SCALE
+end
+
 function system:switchState(state)
 	-- Switches the system's state. With no arguments, it does nothing.
 	if not state then return end
@@ -74,16 +81,19 @@ function system:switchState(state)
 end
 
 function system:setupVars()
-	-- base hp
-	self.max_hp = 50
-	self.hp = self.max_hp
 	-- base stats
+	self.max_hp = 50
+	self.max_mp = 10
+	self.hp = self.max_hp
+	self.mp = self.max_mp
 	self.atk = 5
 	self.def = 5
 	self.mat = 5
 	self.mdf = 5
-	self.agi = 5
+	self.agi = 535
 	-- stat bonuses
+	self.hp_bonus = 0
+	self.mp_bonus = 0
 	self.atk_bonus = 0
 	self.def_bonus = 0
 	self.mat_bonus = 0
@@ -100,6 +110,8 @@ function system:setupVars()
 	self.gold = 0
 	self.max_gold = 500
 	self.gold_icon = "G"
+	-- buff stuff
+	self.status = "normal"
 	-- system stuff
 	self.first_map = "test_cave"
 	self.map_path = "maps/"
@@ -118,7 +130,9 @@ function system:update(dt)
 end
 
 function system:draw()
+	love.graphics.scale(self.scale,self.scale)
 	if self.state and self.state.draw then self.state:draw() end
+	love.graphics.scale(self.scale,self.scale)
 end
 
 function system:keypressed(k)

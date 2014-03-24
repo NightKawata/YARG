@@ -1,5 +1,5 @@
 local itemlist = {
-	["blue_mail"] = {
+	blue_mail = {
 		symbol = "M",
 		color = {128, 128, 255},
 		effect = function(player) 

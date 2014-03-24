@@ -2,6 +2,7 @@
 require("obj.player")
 require("obj.tile")
 require("obj.moneybag")
+require("obj.statuses")
 
 require("items.item")
 local __size = 8
@@ -9,8 +10,11 @@ local generators = {
 	cave = require("generators/cave"),
 }
 local font = love.graphics.getFont()
+--local statuses = require("obj/statuses")
 
-game = {}
+game = {
+	stats = {},
+}
 camera = {
 	x = 1,
 	y = 1,
@@ -24,6 +28,7 @@ function game:open()
 end
 
 function game:refresh()
+	self:setStats()
 	love.keyboard.setKeyRepeat(true)
 	self:loadMap()
 end
@@ -65,11 +70,29 @@ function game:draw()
 	end
 	if game.player and game.player.draw then game.player:draw() end
 	love.graphics.pop()
+	-- Map name
 	love.graphics.print(game.map_name,0,233)
+	-- Who are you?
 	love.graphics.print(system.name.." the "..system.class,0,1)
-
+	-- Status
+	love.graphics.setColor(statuses[system.status].color)
+	love.graphics.print("Status: "..statuses[system.status].name,0,9)
+	love.graphics.setColor(255,255,255)
+	-- Gold
 	local gold_string = system.gold.."/"..system.max_gold..system.gold_icon
 	love.graphics.print(gold_string,320-(font:getWidth(gold_string))-2,233)
+	-- HP
+	local hp_string = (system.hp).."/"..(system.max_hp+system.hp_bonus).."HP"
+	love.graphics.print(hp_string,320-(font:getWidth(hp_string))-2,1)
+	-- MP
+	local mp_string = (system.mp).."/"..(system.max_mp+system.mp_bonus).."MP"
+	love.graphics.print(mp_string,320-(font:getWidth(mp_string))-2,9)
+	-- XP
+	local xp_string = system.xp.."/"..system.max_hp.."XP"
+	love.graphics.print(xp_string,320-(font:getWidth(xp_string))-2,17)
+	-- LEVEL
+	local level_string = "AGI "..system.agi
+	love.graphics.print(level_string,320-(font:getWidth(level_string))-7,225)
 end
 
 function game:keypressed(k)
@@ -77,6 +100,14 @@ function game:keypressed(k)
 
 	if k == "r" then
 		game:refresh()
+	end
+
+	if k == "p" then
+		game:inflictStatus("poison")
+	end
+
+	if k == "b" then
+		game:inflictStatus("frosted")
 	end
 end
 
@@ -122,6 +153,42 @@ function game:kill(obj,dynamic)
 			game.objects[obj.y/8][obj.x/8] = tile:new(obj.x, obj.y, false, {color=game.nonsolcolor})
 		end
 	end
+end
+
+function game:inflictStatus(status)
+	if not status then return end
+	if system.status == "normal" then
+		self:setStats()
+	end
+
+	if status == "normal" then
+		self:restoreStats()
+	end
+
+	system.status = status
+	if statuses[status].init then statuses[status]:init() end
+end
+
+function game:setStats()
+	local stats = game.stats
+	stats.hp = system.hp
+	stats.mp = system.mp
+	stats.atk = system.atk
+	stats.def = system.def
+	stats.mat = system.mat
+	stats.mdf = system.mdf
+	stats.agi = system.agi
+end
+
+function game:restoreStats()
+	local stats = game.stats
+	system.hp = stats.hp
+	system.mp = stats.mp
+	system.atk = stats.atk 
+	system.def = stats.def 
+	system.mat = stats.mat
+	system.mdf = stats.mdf 
+	system.agi = stats.agi
 end
 
 return game

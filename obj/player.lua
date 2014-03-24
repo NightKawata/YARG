@@ -10,6 +10,7 @@ function player:initialize(x,y)
 	self.color = system.playercolor
 	self.player = true
 	self.can_move = true
+	self.steps = 0
 end
 
 function player:update(dt)
@@ -27,24 +28,28 @@ function player:keypressed(k)
 	if k == "right" then
 		if self:check(self.gx+1, self.gy) then
 			self.x = self.x + 8
+			self:step()
 		end
 	end
 
 	if k == "down" then
 		if self:check(self.gx, self.gy+1) then
 			self.y = self.y + 8
+			self:step()
 		end
 	end
 
 	if k == "left" then
 		if self:check(self.gx-1, self.gy) then
 			self.x = self.x - 8
+			self:step()
 		end
 	end
 
 	if k == "up" then
 		if self:check(self.gx, self.gy-1) then
 			self.y = self.y - 8
+			self:step()
 		end
 	end
 
@@ -106,4 +111,39 @@ function player:interact(obj)
 
 	}
 	events[obj.tag or "default"]()
+end
+
+function player:step()
+	self.steps = self.steps + 1
+
+	if system.status ~= "normal" then
+		local s = statuses[system.status]
+		if system.status == "poison" then
+			if self.steps % s.steps == 0 then
+				system.hp = math.max(1, system.hp - (math.floor(system.max_hp/10)))
+			end
+		end
+
+		if system.status == "burn" then
+			if self.steps % s.steps == 0 then
+				game:inflictStatus("normal")
+			end
+		end
+
+		if system.status == "armorless" then
+			if self.steps % s.steps == 0 then
+				game:inflictStatus("normal")
+			end
+		end
+
+		if system.status == "frosted" then
+			if self.steps % s.steps == 0 then
+				system.agi = math.max(1,math.floor(system.agi/1.25))
+			end
+
+			if self.steps % s.cure_steps == 0 then
+				game:inflictStatus("normal")
+			end
+		end
+	end
 end

@@ -12,7 +12,7 @@
 local __TITLE = "YARG"
 local __DEFAULT_WIDTH = 320
 local __DEFAULT_HEIGHT = 240
-local __DEFAULT_SCALE = 1
+local __DEFAULT_SCALE = 3
 local __DEFAULT_FLAGS = {
 	fullscreen = false,
 	fullscreentype = "desktop",
@@ -82,7 +82,7 @@ end
 
 function system:setupVars()
 	-- base stats
-	self.max_hp = 50
+	self.max_hp = 500
 	self.max_mp = 10
 	self.hp = self.max_hp
 	self.mp = self.max_mp
@@ -90,7 +90,7 @@ function system:setupVars()
 	self.def = 5
 	self.mat = 5
 	self.mdf = 5
-	self.agi = 535
+	self.agi = 5
 	-- stat bonuses
 	self.hp_bonus = 0
 	self.mp_bonus = 0
@@ -116,6 +116,7 @@ function system:setupVars()
 	self.first_map = "test_cave"
 	self.map_path = "maps/"
 	self.playercolor = {255,255,255}
+	system.keyrepeat = true
 
 	self.items = {} -- for items that have spawned in the past (only for global items)
 

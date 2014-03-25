@@ -25,31 +25,36 @@ function player:draw()
 end
 
 function player:keypressed(k)
+	if k == "right" 
+	or k == "left"
+	or k == "up"
+	or k == "down"
+	then
+		-- step
+		self:step()
+	end
+
 	if k == "right" then
 		if self:check(self.gx+1, self.gy) then
 			self.x = self.x + 8
-			self:step()
 		end
 	end
 
 	if k == "down" then
 		if self:check(self.gx, self.gy+1) then
 			self.y = self.y + 8
-			self:step()
 		end
 	end
 
 	if k == "left" then
 		if self:check(self.gx-1, self.gy) then
 			self.x = self.x - 8
-			self:step()
 		end
 	end
 
 	if k == "up" then
 		if self:check(self.gx, self.gy-1) then
 			self.y = self.y - 8
-			self:step()
 		end
 	end
 
@@ -120,7 +125,7 @@ function player:step()
 		local s = statuses[system.status]
 		if system.status == "poison" then
 			if self.steps % s.steps == 0 then
-				system.hp = math.max(1, system.hp - (math.floor(system.max_hp/10)))
+				system.hp = math.max(1, system.hp - (math.floor(system.max_hp/50)))
 			end
 		end
 

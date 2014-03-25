@@ -9,6 +9,7 @@ function love.load()
 	class = require("class")
 	sys = require("system")
 	game = require("game")
+	pmenu = require("pmenu")
 	lume = require("lume")
 	system = sys:new()
 

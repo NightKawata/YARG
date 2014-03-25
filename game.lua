@@ -14,6 +14,7 @@ local font = love.graphics.getFont()
 
 game = {
 	stats = {},
+	paused = false,
 }
 camera = {
 	x = 1,
@@ -29,11 +30,18 @@ end
 
 function game:refresh()
 	self:setStats()
-	love.keyboard.setKeyRepeat(true)
 	self:loadMap()
+
+	love.keyboard.setKeyRepeat(system.keyrepeat)
 end
 
 function game:update(dt)
+	-- Make sure it's not paused first
+	if game.paused then
+		pmenu:update(dt)
+		return
+	end
+
 	if game.player then
 		camera.x = (game.player.x/__size) - (camera.fov/2)
 		camera.y = (game.player.y/__size) - (camera.fov/2)
@@ -93,9 +101,14 @@ function game:draw()
 	-- LEVEL
 	local level_string = "AGI "..system.agi
 	love.graphics.print(level_string,320-(font:getWidth(level_string))-7,225)
+
+	if game.paused then
+		pmenu:draw()
+	end
 end
 
 function game:keypressed(k)
+	if game.paused then pmenu:keypressed(k) end
 	if game.player and game.player.keypressed then game.player:keypressed(k) end
 
 	if k == "r" then
@@ -112,6 +125,7 @@ function game:keypressed(k)
 end
 
 function game:keyreleased(k)
+	if game.paused then pmenu:keyrleased(k) end
 	if game.player and game.player.keyreleased then game.player:keyreleased(k) end
 end
 
@@ -161,7 +175,7 @@ function game:inflictStatus(status)
 		self:setStats()
 	end
 
-	if status == "normal" then
+	if status ~= system.status then
 		self:restoreStats()
 	end
 
@@ -171,8 +185,6 @@ end
 
 function game:setStats()
 	local stats = game.stats
-	stats.hp = system.hp
-	stats.mp = system.mp
 	stats.atk = system.atk
 	stats.def = system.def
 	stats.mat = system.mat
@@ -182,8 +194,6 @@ end
 
 function game:restoreStats()
 	local stats = game.stats
-	system.hp = stats.hp
-	system.mp = stats.mp
 	system.atk = stats.atk 
 	system.def = stats.def 
 	system.mat = stats.mat

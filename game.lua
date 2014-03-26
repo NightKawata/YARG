@@ -2,12 +2,14 @@
 require("obj.player")
 require("obj.tile")
 require("obj.moneybag")
+require("obj.door")
 require("obj.statuses")
 
 require("items.item")
 local __size = 8
 local generators = {
 	cave = require("generators/cave"),
+	shop = require("generators/shop"),
 }
 local font = love.graphics.getFont()
 --local statuses = require("obj/statuses")
@@ -28,9 +30,9 @@ function game:open()
 	self:refresh()
 end
 
-function game:refresh()
+function game:refresh(map)
 	self:setStats()
-	self:loadMap()
+	self:loadMap(map)
 
 	love.keyboard.setKeyRepeat(system.keyrepeat)
 end
@@ -99,7 +101,7 @@ function game:draw()
 	local xp_string = system.xp.."/"..system.max_hp.."XP"
 	love.graphics.print(xp_string,320-(font:getWidth(xp_string))-2,17)
 	-- LEVEL
-	local level_string = "AGI "..system.agi
+	local level_string = "LVL "..system.level
 	love.graphics.print(level_string,320-(font:getWidth(level_string))-7,225)
 
 	if game.paused then
@@ -112,7 +114,7 @@ function game:keypressed(k)
 	if game.player and game.player.keypressed then game.player:keypressed(k) end
 
 	if k == "r" then
-		game:refresh()
+		game:refresh("test_shop")
 	end
 
 	if k == "p" then
@@ -144,10 +146,10 @@ function game:loadMap(mapfile)
 		game.map_height = love.math.random(room.min_height, room.max_height)-1
 	else
 		-- If not, it's set, so don't worry (be happy)
-		game.map_width = room.width-1
-		game.map_height = room.height-1
+		game.map_width = room.width
+		game.map_height = room.height
 	end
-	generators[(room.type or "cave")](self, self.objects)
+	generators[(room.type or "cave")](self, self.objects, room)
 end
 
 function game:clearObjects()

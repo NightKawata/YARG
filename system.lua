@@ -12,7 +12,7 @@
 local __TITLE = "YARG"
 local __DEFAULT_WIDTH = 320
 local __DEFAULT_HEIGHT = 240
-local __DEFAULT_SCALE = 3
+local __DEFAULT_SCALE = 1
 local __DEFAULT_FLAGS = {
 	fullscreen = false,
 	fullscreentype = "desktop",
@@ -82,7 +82,7 @@ end
 
 function system:setupVars()
 	-- base stats
-	self.max_hp = 500
+	self.max_hp = 50
 	self.max_mp = 10
 	self.hp = self.max_hp
 	self.mp = self.max_mp

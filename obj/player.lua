@@ -110,6 +110,10 @@ function player:interact(obj)
 			game:kill(obj)
 		end,
 
+		["door"] = function()
+			game:refresh(obj.warp)
+		end,
+
 
 
 

@@ -84,7 +84,7 @@ local function generate(state, room)
 	map = {}
 
 	-- First make a massive filled space
-	width, height = state.map_width-1, state.map_height-1
+	local width, height = state.map_width-1, state.map_height-1
 	for y = 1, height do
 		map[y] = {}
 		for x = 1, width do
